@@ -260,7 +260,7 @@ function containsAny(text, terms) {
 function splitSentences(text) {
   return text
     .split(/\n+/)
-    .flatMap((line) => line.split(/(?<=[.;!?])\s+/))
+    .flatMap((line) => line.replace(/([.;!?])\s+/g, '$1\x00').split('\x00'))
     .map((item) => item.trim())
     .filter(Boolean)
 }
@@ -1271,7 +1271,7 @@ function updateStaticTemplate(template, source, values) {
 function toSentences(text) {
   return text
     .split(/\n+/)
-    .flatMap((line) => line.split(/(?<=[.;!?])\s+/))
+    .flatMap((line) => line.replace(/([.;!?])\s+/g, '$1\x00').split('\x00'))
     .map((item) => item.trim())
     .filter(Boolean)
 }
