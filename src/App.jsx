@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { jsPDF } from 'jspdf'
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs'
-import pdfWorkerSrc from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url'
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc
 
 const defaultTemplate = `-DIAGNÓSTICO: HEMATÚRIA VESICAL
 -COMORBIDADES: NEGA
@@ -1343,6 +1339,16 @@ function appendComplements(baseText, complements) {
 }
 
 async function extractTextFromPdf(file) {
+  let pdfjsLib, pdfWorkerSrc
+  try {
+    ;[pdfjsLib, { default: pdfWorkerSrc }] = await Promise.all([
+      import('pdfjs-dist/legacy/build/pdf.mjs'),
+      import('pdfjs-dist/legacy/build/pdf.worker.mjs?url'),
+    ])
+  } catch {
+    throw new Error('Falha ao carregar componentes PDF. Verifique sua conexão e tente novamente.')
+  }
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc
   const data = await file.arrayBuffer()
   const pdf = await pdfjsLib.getDocument({ data }).promise
   const pages = []
