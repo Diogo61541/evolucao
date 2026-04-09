@@ -11,16 +11,6 @@ function showFatalError(message) {
   root.innerHTML = `<div style="padding:2rem;font-family:sans-serif;color:#b63f1d"><h2>Erro ao carregar o aplicativo</h2><pre style="white-space:pre-wrap;font-size:0.85rem">${escaped}</pre></div>`
 }
 
-window.addEventListener('error', (event) => {
-  console.error('Global error:', event.error || event.message)
-  showFatalError(String(event.error?.message || event.message || 'Erro desconhecido'))
-})
-
-window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled rejection:', event.reason)
-  showFatalError(String(event.reason?.message || event.reason || 'Promessa rejeitada'))
-})
-
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
