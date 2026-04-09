@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './styles.css'
@@ -27,10 +27,24 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+function AppRoot() {
+  useEffect(() => {
+    const loadingScreen = document.getElementById('loading-screen')
+    if (loadingScreen) {
+      loadingScreen.remove()
+    }
+  }, [])
+
+  return (
     <ErrorBoundary>
       <App />
     </ErrorBoundary>
+  )
+}
+
+const root = createRoot(document.getElementById('root'))
+root.render(
+  <React.StrictMode>
+    <AppRoot />
   </React.StrictMode>,
 )
