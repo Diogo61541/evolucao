@@ -1,9 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { jsPDF } from 'jspdf'
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs'
-import pdfWorkerSrc from 'pdfjs-dist/legacy/build/pdf.worker.mjs?url'
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc
 
 const defaultTemplate = `-DIAGNÓSTICO: HEMATÚRIA VESICAL
 -COMORBIDADES: NEGA
@@ -1344,6 +1339,11 @@ function appendComplements(baseText, complements) {
 
 async function extractTextFromPdf(file) {
   const data = await file.arrayBuffer()
+  const [pdfjsLib, { default: pdfWorkerSrc }] = await Promise.all([
+    import('pdfjs-dist/legacy/build/pdf.mjs'),
+    import('pdfjs-dist/legacy/build/pdf.worker.mjs?url'),
+  ])
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc
   const pdf = await pdfjsLib.getDocument({ data }).promise
   const pages = []
 
@@ -1735,9 +1735,10 @@ function App() {
     printWindow.print()
   }
 
-  function downloadFinalPdf() {
+  async function downloadFinalPdf() {
     if (!finalTextWithScales.trim()) return
 
+    const { jsPDF } = await import('jspdf')
     const doc = new jsPDF({ unit: 'pt', format: 'a4' })
     const marginLeft = 40
     const maxWidth = 515
